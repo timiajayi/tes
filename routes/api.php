@@ -27,7 +27,7 @@ Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login')
 Route::middleware('auth.jwt')->group(function () {
     Route::get('/users/{id}', [UserController::class, 'show']);
     Route::get('/organisations', [OrganisationController::class, 'index']);
-    Route::get('/organisations/{orgId}', [OrganisationController::class, 'show']);
+    Route::get('/organisations/{orgId}', [OrganisationController::class, 'show'])->name('organisations.show');
     Route::post('/organisations', [OrganisationController::class, 'store']);
     Route::post('/organisations/{orgId}/users', [OrganisationController::class, 'addUser']);
 });

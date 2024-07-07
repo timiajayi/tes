@@ -12,7 +12,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
     public function register(Request $request)
-    {
+{
+    try {
         $validated = $request->validate([
             'firstName' => 'required|string',
             'lastName' => 'required|string',
@@ -48,7 +49,21 @@ class AuthController extends Controller
                 'user' => $user
             ]
         ], 201);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Validation failed',
+            'errors' => $e->errors()
+        ], 422);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Registration failed',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
+
 
     public function login(Request $request)
     {

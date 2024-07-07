@@ -72,40 +72,55 @@ class AuthControllerTest extends TestCase
     }
 
     public function testRegisterFailsIfRequiredFieldsAreMissing()
-    {
-        $requiredFields = ['firstName', 'lastName', 'email', 'password'];
+{
+    $requiredFields = ['firstName', 'lastName', 'email', 'password'];
 
-        foreach ($requiredFields as $field) {
-            $data = [
-                'firstName' => 'John',
-                'lastName' => 'Doe',
-                'email' => 'john.doe@example.com',
-                'password' => 'password',
-            ];
-            unset($data[$field]);
-
-            $response = $this->postJson(route('auth.register'), $data);
-
-            $response->assertStatus(422)
-                ->assertJsonValidationErrors($field);
-        }
-    }
-
-    public function testRegisterFailsIfDuplicateEmail()
-    {
-        User::factory()->create([
-            'email' => 'john.doe@example.com',
-        ]);
-
-        $response = $this->postJson(route('auth.register'), [
+    foreach ($requiredFields as $field) {
+        $data = [
             'firstName' => 'John',
             'lastName' => 'Doe',
             'email' => 'john.doe@example.com',
             'password' => 'password',
-            'phone' => '1234567890',
-        ]);
+        ];
+        unset($data[$field]);
+
+        $response = $this->postJson(route('auth.register'), $data);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors('email');
+            ->assertJsonValidationErrors($field)
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'errors' => [
+                    $field
+                ]
+            ]);
     }
+}
+
+public function testRegisterFailsIfDuplicateEmail()
+{
+    User::factory()->create([
+        'email' => 'john.doe@example.com',
+    ]);
+
+    $response = $this->postJson(route('auth.register'), [
+        'firstName' => 'John',
+        'lastName' => 'Doe',
+        'email' => 'john.doe@example.com',
+        'password' => 'password',
+        'phone' => '1234567890',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('email')
+        ->assertJsonStructure([
+            'status',
+            'message',
+            'errors' => [
+                'email'
+            ]
+        ]);
+}
+
 }

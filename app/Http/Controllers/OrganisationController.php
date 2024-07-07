@@ -35,13 +35,11 @@ class OrganisationController extends Controller
                     $query->where('organisation_user.userId', $user->userId);
                 })->firstOrFail();
 
-            $formattedOrganisation = [
-                'orgId' => $organisation->orgId,
-                'name' => $organisation->name,
-                'description' => $organisation->description,
-            ];
-
-            return ResponseHelper::success('Organisation retrieved successfully', $formattedOrganisation);
+                return ResponseHelper::success('Organisation retrieved successfully', [
+                    'orgId' => $organisation->orgId,
+                    'name' => $organisation->name,
+                    'description' => $organisation->description,
+                ]);
         } catch (\Exception $e) {
             return ResponseHelper::error('Resource not found', 404);
         }
